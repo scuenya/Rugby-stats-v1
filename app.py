@@ -8,6 +8,7 @@ st.set_page_config(page_title='Data Profiling',layout='wide')
 
 sidebar= st.sidebar
 
+st.header("Primera Version Rugby Markup -V1")
 
 def validate_file(file):
     filename = file.name
@@ -222,7 +223,7 @@ if uploaded_file is not None:
                         (lineoutA[0], 'LINEOUT',lineoutB[0]),
 
 
-                        ], columns=['Team A', '', 'Team B'])
+                        ], columns=[list_of_teams[1], '',list_of_teams[2]])
 
 
 # CSS to inject contained in a string
@@ -230,7 +231,6 @@ hide_table_row_index = """
             <style>
             .row_heading.level0 {display:none}
             .blank {display:none}
-            .text-align: center
             </style>
             """
 
