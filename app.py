@@ -1,10 +1,29 @@
 from email import header
+import matplotlib
 import streamlit as st
 import pandas as pd
+import numpy as np
 import os
 import time
 
+# import Static
+import matplotlib.pyplot as plt 
+import seaborn as sns
+
+# CSS para la pagina 
 st.set_page_config(page_title='Data Profiling',layout='wide')
+
+# CSS to inject contained in a string
+hide_table_row_index = """
+            <style>
+            .row_heading.level0 {display:none}
+            .blank {display:none}
+            </style>
+            """
+
+# Inject CSS with Markdown
+st.markdown(hide_table_row_index, unsafe_allow_html=True)
+
 
 sidebar= st.sidebar
 
@@ -30,11 +49,12 @@ if uploaded_file is not None:
             df = pd.read_csv(uploaded_file)
             list_of_columns = list(df.columns)
             list_of_rows = list(df["Row Name"].unique())
-            list_of_rows.insert(0,'All')
+           
+            # list_of_rows.insert(0,'All')
             list_of_teams = list(df["EQUIPO"].unique())
             list_of_teams.insert(0,'All')
             selected_columns = sidebar.multiselect('Select Columns',list_of_columns,('Row Name', 'EQUIPO', 'RESULTADO','ACTION'))
-            selected_row = sidebar.selectbox('Select Row',list_of_rows)
+            selected_row = sidebar.selectbox('Select Row',list_of_rows,)
             df1 = df[selected_columns].fillna('0')
             if selected_row != 'All':
                 st.write('true')
@@ -196,7 +216,7 @@ if uploaded_file is not None:
         scrumB = list(df_scrumB["Row Name"].value_counts())
     else:
         scrumB = [0]
-
+ 
     # LINEOUT GANADOS
     df_lineoutA = df[(df['Row Name']=='LINEOUT') & (df["EQUIPO"] == list_of_teams[1]) & (df["RESULTADO"]== 'GANADO')]
     if len(df_lineoutA) != 0:
@@ -209,6 +229,8 @@ if uploaded_file is not None:
     else:
         lineoutB = [0]
 
+# Armo la table (df2)
+if uploaded_file is not None:
     df2 = pd.DataFrame([(triesA[0],'TRY',triesB[0]),
                         (p_triesA[0],"PENALTY TRY", p_triesB[0]),
                         (goalsA[0], 'CONVERSION SUCCESS', goalsB[0]),
@@ -221,21 +243,7 @@ if uploaded_file is not None:
                         (red_cardA[0], "RED CARD", red_cardB[0]),
                         (scrumA[0], 'SCRUM', scrumB[0]),
                         (lineoutA[0], 'LINEOUT',lineoutB[0]),
-
-
                         ], columns=[list_of_teams[1], '',list_of_teams[2]])
-
-
-# CSS to inject contained in a string
-hide_table_row_index = """
-            <style>
-            .row_heading.level0 {display:none}
-            .blank {display:none}
-            </style>
-            """
-
-# Inject CSS with Markdown
-st.markdown(hide_table_row_index, unsafe_allow_html=True)
 
 
 
@@ -244,3 +252,23 @@ if uploaded_file is not None:
     with c2:
         st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">FECHA</div>', unsafe_allow_html=True)
         st.table(df2)
+    
+    with c1:
+        st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">Matplotly</div>', unsafe_allow_html=True)
+        st.caption('Bar Chart from Try Count per Team')
+        with st.container():
+            # 
+            row_angles =df[df['Row Name'] == selected_row]
+            value_counts_teams = row_angles['EQUIPO'].value_counts()
+            # draw pie chart
+            fig,ax = plt.subplots()
+            ax.pie(value_counts_teams, autopct='%0.2f%%',labels=[list_of_teams[1],list_of_teams[2]])
+            st.pyplot(fig)
+            # draw a bar_Chart
+            fig,ax = plt.subplots()
+            ax.bar([list_of_teams[1],list_of_teams[2]], value_counts_teams)
+            st.pyplot(fig)
+
+            with st.expander('Show Dataframe'):# in an expander
+                st.dataframe(value_counts_teams)
+        
