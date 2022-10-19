@@ -254,21 +254,28 @@ if uploaded_file is not None:
         st.table(df2)
     
     with c1:
-        st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">Matplotly</div>', unsafe_allow_html=True)
-        st.caption('Bar Chart from Try Count per Team')
+        st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">Matplotly PIE</div>', unsafe_allow_html=True)
+        st.caption('Pie Chart fro Team')
         with st.container():
             # 
             row_angles =df[df['Row Name'] == selected_row]
+            st.subheader(selected_row)
             value_counts_teams = row_angles['EQUIPO'].value_counts()
             # draw pie chart
             fig,ax = plt.subplots()
             ax.pie(value_counts_teams, autopct='%0.2f%%',labels=[list_of_teams[1],list_of_teams[2]])
             st.pyplot(fig)
-            # draw a bar_Chart
-            fig,ax = plt.subplots()
-            ax.bar([list_of_teams[1],list_of_teams[2]], value_counts_teams)
-            st.pyplot(fig)
+            
+    with c3:
+        st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">Matplotly BAR</div>', unsafe_allow_html=True)
+        st.caption('Bar Chart from Try Count per Team')
+        st.subheader(selected_row)
 
-            with st.expander('Show Dataframe'):# in an expander
-                st.dataframe(value_counts_teams)
+        # draw a bar_Chart
+        fig,ax = plt.subplots()
+        ax.bar([list_of_teams[1],list_of_teams[2]], value_counts_teams)
+        st.pyplot(fig)
+
+    with st.expander('Show Dataframe'):# in an expander
+        st.dataframe(value_counts_teams)
         
