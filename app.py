@@ -75,13 +75,15 @@ if uploaded_file is not None:
     if len( df_triesA) != 0:
         triesA = list(df_triesA["Row Name"].value_counts())
     else:
-        triesA = 0
+        triesA = [0]
    
     df_triesB = df[(df['Row Name']=='TRY') & (df["EQUIPO"] == list_of_teams[2])]
     if len(df_triesB) != 0:
         triesB = list(df_triesB["Row Name"].value_counts())
     else:
-        triesB = 0
+        triesB = [0]
+
+
    
     # PENALTY TRIES
     df_p_triesA = df[(df['Row Name']=='PENALTY TRY') & (df["EQUIPO"] == list_of_teams[1])]
@@ -251,7 +253,7 @@ c1, c2, c3, = st.columns(3)
 if uploaded_file is not None:
     with c2:
         st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">FECHA</div>', unsafe_allow_html=True)
-        st.table(df2)
+        st.table(df2.style.set_properties(align='center'))
     
     with c1:
         st.markdown('<div style="text-align: center;font-weight: bold;font-size: 23 px">Matplotly PIE</div>', unsafe_allow_html=True)
@@ -261,8 +263,12 @@ if uploaded_file is not None:
             row_angles =df[df['Row Name'] == selected_row]
             st.subheader(selected_row)
             value_counts_teams = row_angles['EQUIPO'].value_counts()
+            #include a background image
             # draw pie chart
             fig,ax = plt.subplots()
+  
+            # add image as bitimage
+           
             ax.pie(value_counts_teams, autopct='%0.2f%%',labels=[list_of_teams[1],list_of_teams[2]])
             st.pyplot(fig)
             
@@ -273,9 +279,17 @@ if uploaded_file is not None:
 
         # draw a bar_Chart
         fig,ax = plt.subplots()
-        ax.bar([list_of_teams[1],list_of_teams[2]], value_counts_teams)
+        plt.rcParams["figure.figsize"] = [5, 5]
+        plt.rcParams["figure.autolayout"] = False
+        im = plt.imread("images/rugby-field2.png")
+        # fig.patch.set_facecolor((0.66, 0.49, 0.97))
+        ax.set_facecolor((0.46, 0.29, 0.97, 0.1))
+        im = ax.imshow(im, origin=('lower'),extent=(0,1,0,3))
+        ax.bar([list_of_teams[1],list_of_teams[2]], value_counts_teams, color=('red','blue'))
         st.pyplot(fig)
 
     with st.expander('Show Dataframe'):# in an expander
         st.dataframe(value_counts_teams)
         
+st.markdown('---')
+st.caption('Canchita Plot')
